@@ -3,7 +3,6 @@ const cors = require('cors');
 const express = require('express');
 const morgan = require('morgan');
 const fileUpload = require('express-fileupload');
-// const bodyParser = require('body-parser');
 
 const versionRouter = require('./routes/version');
 const scanRouter = require('./routes/scan');
@@ -17,8 +16,6 @@ async function makeServer(cfg) {
     const app = express();
 
     app.use(cors());
-    // app.use(bodyParser.json());
-    // app.use(bodyParser.urlencoded({ extended: true }));
     app.use((req, res, next) => {
       req._av = clamscan;
       next();
@@ -30,7 +27,7 @@ async function makeServer(cfg) {
     app.use('/api/v1/version', versionRouter);
     app.use('/api/v1/scan', scanRouter);
     app.use('/api/v1/dbsignatures', dbSignaturesRouter);
-    app.all('*', (req, res, next) => {
+    app.all('/{*splat}', (req, res) => {
       res.status(405).json({ success: false, data: { error: 'Not allowed.' } });
     });
 
